@@ -3,7 +3,7 @@ import React from "react";
 
 function DealsSec() {
   return (
-    <div >
+    <div className="px-4">
       <div className="flex gap-x-5">
         <div className="w-[971px]">
         <div className="bg-[#01A49E] uppercase text-white rounded-[10px] text-[18px] font-bold py-3 pl-6 ">
@@ -105,8 +105,30 @@ function DealsSec() {
       </div>
 
       <div>
-        <div className="bg-[#01A49E] rounded-[20px] h-[140px]"></div>
+        <div className="bg-[#01A49E] rounded-[20px] h-[140px] relative overflow-hidden text-white flex justify-around items-center">
+          <div className="absolute h-[400px] w-[400px] -z-0 rounded-full bg-[#5F81A2] left-75 top-20 -translate-y-1/2"></div>
+          <div>
+            <h1 className="uppercase font-bold text-[24px]">Pre Order</h1>
+            <p className="text-[14px]">From $399</p>
+          </div>
+
+          <div className="h-[125px] w-[386px] mt-[15px] z-1 bg-[url('/homeimg/banner2.png')] bg-cover">
+
+          </div>
+
+          <div>
+            <p className="text-[12px]">Opplo Watch Sport Series 8</p>
+            <h1 className="text-[30px]">A healthy leap ahead</h1>
+          </div>
+
+          <div className='flex justify-items-end'>
+            <button className="bg-[#fff] text-black py-2 px-4 rounded">Discover Now</button>
+          </div>
+
+
+        </div>
       </div>
+      
       
     </div>
   );

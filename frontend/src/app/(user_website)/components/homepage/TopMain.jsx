@@ -33,7 +33,7 @@ const lists = [
 ];
 function TopMain() {
   return (
-      <div className="flex gap-x-5 my-2">
+      <div className="flex gap-x-5 my-2 px-4">
         <div className="p-4 w-[298px] bg-white rounded-[15px]">
           <h1 className="border-b border-[#ECECEC] py-2 mb-4 font-bold text-[24px]">
             Category
