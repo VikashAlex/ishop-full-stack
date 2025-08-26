@@ -3,10 +3,10 @@ import { Edit, Trash2, RefreshCcw, Plus } from "lucide-react";
 import Link from "next/link";
 import { getCategory } from "../../../../../library/api_calls";
 import { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { TbCategory2 } from "react-icons/tb";
-import axios from "axios";
+import { Axiosinstance } from "@/app/utils/helper";
 
 export default function ProductsPage() {
   const [category, setCategory] = useState([]);
@@ -20,8 +20,8 @@ export default function ProductsPage() {
   }, [flag]);
 
   const deleteCategory = (id) => {
-    axios
-      .delete(`http://localhost:8000/category/delete/${id}`)
+    Axiosinstance
+      .delete(`category/delete/${id}`)
       .then((res) => {
         console.log(res);
         if (res.status == 201) {
@@ -35,8 +35,8 @@ export default function ProductsPage() {
   };
 
   const updateCategory = (id) => {
-    axios
-      .patch(`http://localhost:8000/category/update/${id}`)
+    Axiosinstance
+      .patch(`category/update/${id}`)
       .then((res) => {
         console.log(res);
         if (res.status == 201) {
@@ -60,7 +60,6 @@ export default function ProductsPage() {
       </div>
 
       <div className="overflow-hidden rounded-2xl shadow-md bg-white">
-        <ToastContainer />
         {category.length == 0 ? (
           <div className="w-full h-[70vh] flex items-center justify-center">
             <div className="relative w-full max-w-xl rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center shadow-sm">
@@ -121,6 +120,7 @@ export default function ProductsPage() {
             <thead className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 uppercase text-xs font-semibold">
               <tr>
                 <th className="px-6 py-3">ID</th>
+                <th className="px-6 py-3">Image</th>
                 <th className="px-6 py-3">Name</th>
                 <th className="px-6 py-3">Category</th>
                 <th className="px-6 py-3">Satus</th>
@@ -134,6 +134,11 @@ export default function ProductsPage() {
                   className="border-b hover:bg-gray-50 transition duration-200"
                 >
                   <td className="px-6 py-4 font-medium">{index + 1}</td>
+                  <td className="px-6 py-4">
+                    <img
+                      className="w-[30px]"
+                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL}images/categoryImg/${category.image}`} alt={category.image} />
+                  </td>
                   <td className="px-6 py-4">{category.name}</td>
                   <td className="px-6 py-4">{category.slug}</td>
                   <td className="px-6 py-4">
@@ -147,9 +152,6 @@ export default function ProductsPage() {
                   </td>
 
                   <td className="px-6 py-4 flex justify-center gap-2">
-                    <button className="flex items-center gap-1 px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition text-xs">
-                      <Edit className="w-4 h-4" /> Edit
-                    </button>
                     <button
                       onClick={() => deleteCategory(category._id)}
                       className="flex items-center gap-1 px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-xs"
@@ -158,6 +160,9 @@ export default function ProductsPage() {
                     </button>
                     <button onClick={()=>updateCategory(category._id)} className="flex items-center gap-1 px-3 py-1.5 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition text-xs">
                       <RefreshCcw className="w-4 h-4" /> Update
+                    </button>
+                    <button className="flex items-center gap-1 px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition text-xs">
+                      <Edit className="w-4 h-4" /> Edit
                     </button>
                   </td>
                 </tr>

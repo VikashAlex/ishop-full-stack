@@ -3,6 +3,7 @@ import "../globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Sidebar from "./components/Sidebar";
+import { ToastContainer } from 'react-toastify';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning
         className={`${geistSans.variable}   antialiased`}
       >
+        <ToastContainer />
         <Header/>
         <div className="mt-16 flex min-h-[81vh]">
            <Sidebar />

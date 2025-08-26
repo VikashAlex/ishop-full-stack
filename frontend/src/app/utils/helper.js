@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export function helper(str) {
   return str
     .toLowerCase()                      // lowercase me convert
@@ -6,3 +8,9 @@ export function helper(str) {
     .replace(/\s+/g, "-")               // space ko "-"
     .replace(/-+/g, "-");               // multiple "-" ko single "-"
 }
+
+const Axiosinstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL
+});
+
+export {Axiosinstance}

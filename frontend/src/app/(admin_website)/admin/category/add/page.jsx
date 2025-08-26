@@ -1,11 +1,10 @@
 "use client";
-import { helper } from "@/app/utils/helper";
-import axios from "axios";
+import { Axiosinstance, helper } from "@/app/utils/helper";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
-import { ToastContainer, toast } from 'react-toastify';
+import {  toast } from 'react-toastify';
 
 
 function page() {
@@ -13,27 +12,33 @@ function page() {
   const nameRfe = useRef(null);
   const slugRfe = useRef(null);
   const statusRfe = useRef(null);
+  const imgRfe = useRef(null);
   const formHandler = (e) => {
     e.preventDefault();
     const name = nameRfe.current.value;
     const slug = slugRfe.current.value;
     const status = statusRfe.current.checked;
-    const data = {name,slug,status};
-    axios.post("http://localhost:8000/category/create", data).then((res) => {
-        if (res.status==201) {
-             toast.success(res.data.msg)
-            setTimeout(() => {
-                router.push('/admin/category');
-            }, 5000);
-        }
-      }).catch((err) => {
-        if(err.response.status==301){
-            toast.warning(err.response.data.msg)
-        }
-        else{
-            toast.warning(err.response.data.msg)
-        }
-      });
+    const image = imgRfe.current.files[0];
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("slug", slug);
+    formData.append("status", status);
+    formData.append("image", image);
+    Axiosinstance.post("category/create", formData).then((res) => {
+      if (res.status == 201) {
+        toast.success(res.data.msg)
+        setTimeout(() => {
+          router.push('/admin/category');
+        }, 5000);
+      }
+    }).catch((err) => {
+      if (err.response.status == 301) {
+        toast.warning(err.response.data.msg)
+      }
+      else {
+        toast.warning(err.response.data.msg)
+      }
+    });
   };
   const createSlug = () => {
     const slug = helper(nameRfe.current.value);
@@ -41,14 +46,15 @@ function page() {
   };
 
   return (
-    <div className="flex items-center justify-center  bg-gradient-to-br from-gray-100 to-gray-200 p-6 w-full">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-8">
+    <div className="flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 p-6 w-full">
+      <div className="w-full  bg-white rounded-2xl shadow-xl p-8">
         <div className="flex items-center gap-2 mb-6">
           <PlusCircle className="w-6 h-6 text-blue-600" />
           <h1 className="text-2xl font-bold text-gray-800">Add New Category</h1>
         </div>
 
         <form className="space-y-5" onSubmit={formHandler}>
+          {/* Category Name */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Category Name
@@ -63,6 +69,7 @@ function page() {
             />
           </div>
 
+          {/* Slug */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Slug
@@ -76,6 +83,33 @@ function page() {
             />
           </div>
 
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Category Image
+            </label>
+
+            <label
+              htmlFor="categoryImage"
+              className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition"
+            >
+              <span className="text-gray-600 text-sm font-medium">
+                Click to upload or drag & drop
+              </span>
+              <span className="text-xs text-gray-400">PNG, JPG up to 2MB</span>
+              <input
+                id="categoryImage"
+                type="file"
+                accept="image/*"
+                name="image"
+                ref={imgRfe}
+                className="hidden"
+              />
+            </label>
+          </div>
+
+
+          {/* Status */}
           <div className="flex items-center gap-3">
             <label className="text-sm font-medium text-gray-600">
               Active Status
@@ -87,6 +121,7 @@ function page() {
             />
           </div>
 
+          {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
             <Link href="/admin/category">
               <button
@@ -105,8 +140,8 @@ function page() {
           </div>
         </form>
       </div>
-      <ToastContainer/>
     </div>
+
   );
 }
 
