@@ -1,7 +1,9 @@
 // components/Sidebar.jsx
 import Link from "next/link";
 import { MdCategory } from "react-icons/md";
-import { LayoutDashboard,  ShoppingCart, Users, Settings } from "lucide-react";
+import { LayoutDashboard, Settings } from "lucide-react";
+import { AiOutlineBgColors } from "react-icons/ai";
+import { TbBrandShazam } from "react-icons/tb";
 
 const Sidebar = () => {
   return (
@@ -14,11 +16,11 @@ const Sidebar = () => {
         <Link href="/admin/category" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-200">
           <MdCategory className="w-5 h-5" /> Category
         </Link>
-        <Link href="/admin/orders" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-200">
-          <ShoppingCart className="w-5 h-5" /> Orders
+        <Link href="/admin/color" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-200">
+          <AiOutlineBgColors className="w-5 h-5" /> Colors
         </Link>
-        <Link href="/admin/customers" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-200">
-          <Users className="w-5 h-5" /> Customers
+        <Link href="/admin/brands" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-200">
+          <TbBrandShazam className="w-5 h-5" /> Brands
         </Link>
         <Link href="/admin/settings" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-200">
           <Settings className="w-5 h-5" /> Settings

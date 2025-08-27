@@ -1,8 +1,29 @@
+import { Axiosinstance } from "@/app/utils/helper";
+
 const { default: axios } = require("axios")
 
-const getCategory = async()=>{
-    const response =await axios.get('http://localhost:8000/category/get');
+const getCategory = async(id=null)=>{
+    let API = null
+    if (id==null) {
+        API = 'http://localhost:8000/category/get';
+    }else{
+        API =  `http://localhost:8000/category/get/${id}`;
+    }
+    const response =await axios.get(API);
     const data = await response.data;
     return data.getCategory
 }
-export {getCategory}
+
+const getColors = async(id=null) =>{
+    let API = null;
+    if (id==null) {
+        API= "/color/get"
+    }else{
+        API = `/color/get/${id}`
+    }
+    const res = await Axiosinstance.get(API);
+    const data = await res.data;
+    return data.getColor;
+
+}
+export {getCategory,getColors}

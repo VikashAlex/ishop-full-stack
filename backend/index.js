@@ -2,12 +2,17 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const categoryRoutes = require('./routes/category.route');
+const colorRoutes = require('./routes/color.route');
 const server = express();
 mongoose.set('strictQuery', true); 
 require('dotenv').config();
 server.use(express.json());
 server.use(cors());
+
+
 server.use('/category',categoryRoutes)
+server.use('/color',colorRoutes)
+
 server.use(express.static('./public'));
 
 

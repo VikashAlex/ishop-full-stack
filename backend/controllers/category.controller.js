@@ -4,24 +4,28 @@ const fs = require('fs')
 
 const categoryController = {
   async getCategory(req, res) {
+    const { id } = req.params;
+    let getCategory = null
     try {
-      const getCategory = await categoryModel.find();
+      if (id) {
+        getCategory = await categoryModel.findById(id);
+      } else {
+        getCategory = await categoryModel.find();
+      }
       if (getCategory) {
         return res.status(201).json({ msg: "Data Get Successfully...", getCategory });
       }
     } catch (error) {
+      console.log(error)
       return res.status(501).json({ msg: "Internal Server Error..", success: false });
     }
   },
-
   async createCategory(req, res) {
     const { name, slug, status } = req.body;
-    const Categoryimage = req.files?.image; 
-
+    const Categoryimage = req.files?.image;
     if (!name || !slug || !Categoryimage) {
       return res.status(400).json({ msg: "All fileds are required...", success: false });
     }
-
     try {
       const existing = await categoryModel.findOne({ name });
       if (existing) {
@@ -48,8 +52,6 @@ const categoryController = {
       return res.status(500).json({ msg: "Internal Server Error...😪", success: false });
     }
   },
-
-
   async updateCategory(req, res) {
     try {
       const { id } = req.params
@@ -79,6 +81,59 @@ const categoryController = {
       return res.status(501).json({ msg: "Internal Server Error..", success: false });
     }
   },
+  async editCategory(req, res) {
+    const { id } = req.params;
+    const { name, slug, status } = req.body;
+    const Categoryimage = req.files?.image;
+
+    if (!name || !slug) {
+      return res.status(400).json({ msg: "All fields are required...", success: false });
+    }
+
+    try {
+      const existing = await categoryModel.findById(id);
+      if (!existing) {
+        return res.status(404).json({ msg: "Category not found", success: false });
+      }
+
+      const update = {};
+      if (name) update.name = name;
+      if (slug) update.slug = slug;
+      if (status) update.status = status;
+
+      if (Categoryimage) {
+        if (existing.image) {
+          try {
+            fs.unlinkSync(`./public/images/categoryImg/${existing.image}`);
+          } catch (err) {
+            return res.status(203).json({ msg: "Old image not found, skipping delete...", success: true });
+          }
+        }
+        const imgName = categoryUniueName(Categoryimage.name);
+        const destination = 'public/images/categoryImg/' + imgName;
+        Categoryimage.mv(destination, async (error) => {
+          if (error) {
+            return res.status(500).json({ msg: "File not uploaded...", success: false });
+          }
+          update.image = imgName;
+          const createData = await categoryModel.updateOne(
+            { _id: id },
+            { $set: update }
+          );
+
+          return res.status(201).json({ msg: "Category updated successfully 😋", success: true, data: createData });
+        });
+      } else {
+        const createData = await categoryModel.updateOne(
+          { _id: id },
+          { $set: update }
+        );
+        return res.status(201).json({ msg: "Category updated successfully 😋", success: true, data: createData });
+      }
+    } catch (error) {
+      return res.status(500).json({ msg: "Internal Server Error...😪", success: false });
+    }
+  }
 }
 
 module.exports = categoryController;
