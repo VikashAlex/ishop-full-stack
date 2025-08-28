@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const categoryRoutes = require('./routes/category.route');
 const colorRoutes = require('./routes/color.route');
+const brandRoutes = require('./routes/brand.route');
 const server = express();
 mongoose.set('strictQuery', true); 
 require('dotenv').config();
@@ -12,6 +13,7 @@ server.use(cors());
 
 server.use('/category',categoryRoutes)
 server.use('/color',colorRoutes)
+server.use('/brands',brandRoutes)
 
 server.use(express.static('./public'));
 

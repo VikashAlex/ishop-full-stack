@@ -26,4 +26,16 @@ const getColors = async(id=null) =>{
     return data.getColor;
 
 }
-export {getCategory,getColors}
+
+const getBrands = async(id=null)=>{
+    let API = null;
+    if (id==null) {
+        API = 'brands/get'
+    }else {
+        API = `brands/get/${id}`;
+    }
+    const res = await Axiosinstance(API);
+    return res.data.getBrand;
+
+}
+export {getCategory,getColors,getBrands}
