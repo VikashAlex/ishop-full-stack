@@ -1,6 +1,6 @@
-// components/Sidebar.jsx
+
 import Link from "next/link";
-import { MdCategory } from "react-icons/md";
+import { MdCategory,MdOutlineProductionQuantityLimits } from "react-icons/md";
 import { LayoutDashboard, Settings } from "lucide-react";
 import { AiOutlineBgColors } from "react-icons/ai";
 import { TbBrandShazam } from "react-icons/tb";
@@ -21,6 +21,9 @@ const Sidebar = () => {
         </Link>
         <Link href="/admin/brands" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-200">
           <TbBrandShazam className="w-5 h-5" /> Brands
+        </Link>
+        <Link href="/admin/product" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-200">
+          <MdOutlineProductionQuantityLimits className="w-5 h-5" /> Product
         </Link>
         <Link href="/admin/settings" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-200">
           <Settings className="w-5 h-5" /> Settings

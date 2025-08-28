@@ -23,10 +23,10 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable}   antialiased`}
       >
         <ToastContainer />
-        <Header/>
+        <Header />
         <div className="mt-16 flex min-h-[81vh]">
-           <Sidebar />
-        {children}
+          <Sidebar />
+          {children}
         </div>
         <Footer />
       </body>

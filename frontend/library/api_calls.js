@@ -1,15 +1,13 @@
 import { Axiosinstance } from "@/app/utils/helper";
 
-const { default: axios } = require("axios")
-
 const getCategory = async(id=null)=>{
     let API = null
     if (id==null) {
-        API = 'http://localhost:8000/category/get';
+        API = 'category/get';
     }else{
-        API =  `http://localhost:8000/category/get/${id}`;
+        API =  `category/get/${id}`;
     }
-    const response =await axios.get(API);
+    const response =await Axiosinstance.get(API);
     const data = await response.data;
     return data.getCategory
 }
@@ -21,7 +19,7 @@ const getColors = async(id=null) =>{
     }else{
         API = `/color/get/${id}`
     }
-    const res = await Axiosinstance.get(API);
+    const res = await Axiosinstance(API);
     const data = await res.data;
     return data.getColor;
 
@@ -35,7 +33,8 @@ const getBrands = async(id=null)=>{
         API = `brands/get/${id}`;
     }
     const res = await Axiosinstance(API);
-    return res.data.getBrand;
+    const data = await res.data;
+    return data.getBrand;
 
 }
 export {getCategory,getColors,getBrands}
