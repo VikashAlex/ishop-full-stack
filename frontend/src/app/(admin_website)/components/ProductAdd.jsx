@@ -1,51 +1,28 @@
 'use client'
-import { helper } from "@/app/utils/helper";
+import { Axiosinstance, helper } from "@/app/utils/helper";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import Select from 'react-select'
+import TextEditor from "./TextEditor";
+import { toast } from "react-toastify";
+import { Router } from "lucide-react";
 
 
 export default function ProductForm({ category, brands, color }) {
-
+    const [selClr, setSelCrl] = useState([]);
+    const [longDesc, setLongDes] = useState('')
     const nameRfe = useRef(null);
     const slugRfe = useRef(null);
-    const statusRfe = useRef(null);
-    const stockRfe = useRef(null);
-    const topsellingRfe = useRef(null);
-    const imgRfe = useRef(null);
     const originalPriceRfe = useRef();
     const discoutRfe = useRef();
     const finalPriceRfe = useRef()
 
-    const formHandler = (e) => {
-        e.preventDefault();
+    const statusRfe = useRef(null);
+    const stockRfe = useRef(null);
+    const topsellingRfe = useRef(null);
+    const imgRfe = useRef(null);
 
-        console.log(category, "category")
-        console.log(brands, "brands")
-        console.log(color, "colors")
-        return
-        const name = nameRfe.current.value;
-        const slug = slugRfe.current.value;
-        const shortDescription = e.target.shortDescription.value;
-        const longDescription = e.target.longDescription.value;
-        const originalPrice = originalPriceRfe.current.value;
-        const discountPercentage = discoutRfe.current.value;
-        const finalPrice = finalPriceRfe.current.value;
-        const categoryId = e.target.categoryId.value;
-        const BrandId = e.target.BrandId.value;
-        const colors = e.target.colors.value;
-        const thumbnail = imgRfe.current.files[0];
-        const images = imgRfe.current.files[0];
-        const stock = stockRfe.current.checked ? true : false;
-        const topSelling = topsellingRfe.current.checked ? true : false;
-        const status = statusRfe.current.checked ? true : false;
 
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("slug", slug);
-        formData.append("status", status);
-        formData.append("image", image);
-
-    };
     const createSlug = () => {
         const slug = helper(nameRfe.current.value);
         slugRfe.current.value = slug;
@@ -56,6 +33,47 @@ export default function ProductForm({ category, brands, color }) {
         const fp = op - (op * dp) / 100;
         finalPriceRfe.current.value = fp;
     }
+    const formHandler = (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append("name", nameRfe.current.value);
+        formData.append("slug", slugRfe.current.value);
+        formData.append("shortDescription", e.target.shortDescription.value);
+        formData.append("longDescription", longDesc);
+        formData.append("originalPrice", originalPriceRfe.current.value);
+        formData.append("discountPercentage", discoutRfe.current.value);
+        formData.append("finalPrice", finalPriceRfe.current.value);
+        formData.append("categoryId", e.target.categoryId.value);
+        formData.append("BrandId", e.target.BrandId.value);
+        formData.append("colors", JSON.stringify(selClr));
+        formData.append("thumbnail", e.target.thumbnail.files[0]);
+        formData.append("stock", stockRfe.current.checked ? true : false);
+        formData.append("topSelling", topsellingRfe.current.checked ? true : false);
+        formData.append("status", statusRfe.current.checked ? true : false);
+        //All Done !
+        for (let img of e.target.images.files) {
+            formData.append("images", img);
+        }
+
+
+        Axiosinstance.post("product/create", formData).then((res) => {
+            if (res.status == 201) {
+                toast.success(res.data.msg)
+                setTimeout(() => {
+                    Router.push('/admin/product');
+                }, 5000);
+            }
+        }).catch((err) => {
+            if (err.response.status == 301) {
+                toast.warning(err.response.data.msg)
+            }
+            else {
+                toast.warning(err.response.data.msg)
+            }
+        });
+
+    };
+
 
 
     return (
@@ -98,23 +116,18 @@ export default function ProductForm({ category, brands, color }) {
             </div>
 
             {/* Short + Long Description */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="col-span-2">
+                    <label className="block text-sm font-medium mb-1">Long Description</label>
+                    <TextEditor value={longDesc} changehandler={(data) => setLongDes(data)} />
+                </div>
+                <div className="col-span-1">
                     <label className="block text-sm font-medium mb-1">Short Description</label>
                     <textarea
                         name="shortDescription"
                         maxLength={200}
                         rows="3"
                         placeholder="Quick intro..."
-                        className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
-                    ></textarea>
-                </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Long Description</label>
-                    <textarea
-                        name="longDescription"
-                        rows="3"
-                        placeholder="Detailed description..."
                         className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
                     ></textarea>
                 </div>
@@ -160,60 +173,63 @@ export default function ProductForm({ category, brands, color }) {
                 </div>
             </div>
 
-            {/* Category & Brand */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Category & Brand & Colors*/}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Category */}
                 <div>
                     <label className="block text-sm font-medium mb-1">Category</label>
-                    <select
+                    <Select
                         name="categoryId"
-                        className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
-                    >
-                        <option value="">-- Select Category --</option>
-
-                        {
-                            category.map((category, index) => {
-                                return <option key={index + 1} value={category.name}>{category.name}</option>
+                        instanceId="category-select"
+                        placeholder="-- Category Selector --"
+                        options={
+                            category.map((category) => {
+                                return { value: category._id, label: category.name }
                             })
-                        }
-                    </select>
+                        } />
                 </div>
+
+                {/* brand */}
                 <div>
                     <label className="block text-sm font-medium mb-1">Brand</label>
-                    <select
+                    <Select
                         name="BrandId"
-                        className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
-                    >
-                        <option value="">-- Select Brand --</option>
-                        {
-                            brands.map((brand, index) => {
-                                return <option key={index + 1} value={brand.name}>{brand.name}</option>
+                        instanceId="Brands-select"
+                        placeholder="-- Brands Selector --"
+                        options={
+                            brands.map((brand) => {
+                                return { value: brand._id, label: brand.name }
                             })
-                        }
-                    </select>
+                        } />
+                </div>
+
+                {/* Colors */}
+                <div>
+                    <label className="block text-sm font-medium mb-1">Colors</label>
+                    <Select
+                        instanceId="Colors-select"
+                        isMulti
+                        onChange={(data) => {
+                            const color = data.map((ob) => ob.value)
+                            setSelCrl(color);
+                        }}
+                        closeMenuOnSelect={false}
+                        placeholder="-- Color Selector --"
+                        options={
+                            color.map((clr) => {
+                                return { value: clr._id, label: clr.name }
+                            })
+                        } />
+                    <p className="text-xs text-gray-500 mt-1">Hold Ctrl / Cmd to select multiple</p>
                 </div>
             </div>
 
-            {/* Colors */}
-            <div>
-                <label className="block text-sm font-medium mb-1">Colors</label>
-                <select
-                    name="colors"
 
-                    className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                    {
-                        color.map((clr, index) => {
-                            return <option key={index + 1} value={clr.name}>{clr.name}</option>
-                        })
-                    }
-                </select>
-                <p className="text-xs text-gray-500 mt-1">Hold Ctrl / Cmd to select multiple</p>
-            </div>
 
             {/* Thumbnail + Images */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
                 {/* Thumbnail */}
-                <div>
+                <div className="relative">
                     <label className="block text-sm font-medium mb-2">Thumbnail</label>
                     <div className="flex items-center justify-center w-full h-30 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-purple-500 transition">
                         {/* Placeholder Preview */}
@@ -241,31 +257,33 @@ export default function ProductForm({ category, brands, color }) {
 
                 {/* Additional Images */}
                 <div>
-                    <label className="block text-sm font-medium mb-2">Additional Images</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        {/* Placeholder Boxes */}
-                        {[1, 2, 3, 4].map((i) => (
-                            <div
-                                key={i}
-                                className="flex items-center justify-center h-20 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-pink-500 transition"
-                            >
-                                <div className="text-center text-gray-400">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="mx-auto h-8 w-8 mb-1 text-gray-400"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                                    </svg>
-                                    <p className="text-xs">Add</p>
+                    <label htmlFor="images" className="block text-sm font-medium mb-2">Additional Images
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {/* Placeholder Boxes */}
+                            {[1, 2, 3, 4].map((i) => (
+                                <div
+                                    key={i}
+                                    className="flex items-center justify-center h-20 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-pink-500 transition"
+                                >
+                                    <div className="text-center text-gray-400">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="mx-auto h-8 w-8 mb-1 text-gray-400"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                                        </svg>
+                                        <p className="text-xs">Add</p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    </label>
                     <input
                         type="file"
+                        id="images"
                         name="images"
                         multiple
                         accept="image/*"
@@ -278,11 +296,11 @@ export default function ProductForm({ category, brands, color }) {
             {/* Toggles */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" name="stock" defaultChecked className="accent-purple-600" />
+                    <input type="checkbox" ref={stockRfe} name="stock" defaultChecked className="accent-purple-600" />
                     In Stock
                 </label>
                 <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" name="topSelling" className="accent-purple-600" />
+                    <input type="checkbox" ref={topsellingRfe} name="topSelling" className="accent-purple-600" />
                     Top Selling
                 </label>
                 <label className="flex items-center gap-2 text-sm">

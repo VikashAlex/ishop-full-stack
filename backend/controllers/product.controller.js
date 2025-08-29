@@ -2,6 +2,12 @@ const productModel = require("../models/product.model");
 const categoryUniueName = require("../utility/helper")
 const fs = require('fs')
 
+const savefile = async (imageObj) => {
+  const imageName = categoryUniueName(imageObj.name);
+  const destination = 'public/images/product' + imageName;
+  await imageObj.mv(destination);
+  return imageName;
+}
 const productController = {
   async getProduct(req, res) {
     const { id } = req.params;
@@ -21,35 +27,28 @@ const productController = {
     }
   },
   async createProduct(req, res) {
-    const { name, slug, status } = req.body;
-    const Categoryimage = req.files?.image;
-    if (!name || !slug || !Categoryimage) {
-      return res.status(400).json({ msg: "All fileds are required...", success: false });
-    }
+    const name = req.body.name;
     try {
-      const existing = await categoryModel.findOne({ name });
+      const existing = await productModel.findOne({name});
       if (existing) {
-        return res.status(409).json({ msg: "Category name must be unique...😥", success: false });
+        return res.status(301).json({msg:"Product Already Exsiting...😢",success:false});
       }
-      const imgName = categoryUniueName(Categoryimage.name)
-      const destination = 'public/images/categoryImg/' + imgName;
-      Categoryimage.mv(destination, async (error) => {
-        if (error) {
-          return res.status(500).json({ msg: "File not uploaded...", success: false });
-        }
-
-        const createData = await categoryModel.create({
-          name,
-          slug,
-          status,
-          image: imgName
-        });
-
-        return res.status(201).json({ msg: "Category created successfully...😋", success: true, data: createData });
-      });
-
+      const thumbnail = req.files.thumbnail ? await savefile(req.files.thumbnail) : null;
+      const images = req.files?.images
+        ? await Promise.all(
+          (Array.isArray(req.files.images)
+            ?
+            req.files.images
+            : [req.files.images]
+          ).map((img)=> savefile(img))
+        )
+        :
+        []
+      await productModel.create({ ...req.body, colors: req.body.colors ? JSON.parse(req.body.colors) : [], thumbnail, images })
+      return res.status(201).json({msg:"Product Create Successful...😘",success:true});
     } catch (error) {
-      return res.status(500).json({ msg: "Internal Server Error...😪", success: false });
+      console.log(error)
+       return res.status(501).json({msg:"Internal Server Error...",success:false});
     }
   },
 }
