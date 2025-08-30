@@ -11,6 +11,17 @@ const getCategory = async(id=null)=>{
     const data = await response.data;
     return data.getCategory
 }
+const getProduct = async(id=null)=>{
+    let API = null
+    if (id==null) {
+        API = 'product/get';
+    }else{
+        API =  `product/get/${id}`;
+    }
+    const response =await Axiosinstance.get(API);
+    const data = await response.data;
+    return data.getProduct
+}
 
 const getColors = async(id=null) =>{
     let API = null;
@@ -37,4 +48,4 @@ const getBrands = async(id=null)=>{
     return data.getBrand;
 
 }
-export {getCategory,getColors,getBrands}
+export {getCategory,getColors,getBrands,getProduct}

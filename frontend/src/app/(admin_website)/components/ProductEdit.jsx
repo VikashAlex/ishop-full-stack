@@ -1,14 +1,16 @@
 'use client'
 import { Axiosinstance, helper } from "@/app/utils/helper";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Select from 'react-select'
-import TextEditor from "./TextEditor";
+import TextEditor from "@/app/(admin_website)/components/TextEditor";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { getProduct } from "../../../../library/api_calls";
 
-
-export default function ProductForm({ category, brands, color }) {
+export default function ProductEdit({color,brands,category}) {
+    const {product_id} = useParams()
+    const [product,setProduct]=useState({})
     const router = useRouter();
     const [selClr, setSelCrl] = useState([]);
     const [longDesc, setLongDes] = useState('')
@@ -17,7 +19,6 @@ export default function ProductForm({ category, brands, color }) {
     const originalPriceRfe = useRef();
     const discoutRfe = useRef();
     const finalPriceRfe = useRef()
-
     const statusRfe = useRef(null);
     const stockRfe = useRef(null);
     const topsellingRfe = useRef(null);
@@ -57,7 +58,8 @@ export default function ProductForm({ category, brands, color }) {
         }
 
 
-        Axiosinstance.post("product/create", formData).then((res) => {
+        Axiosinstance.put(`product/edit/${product_id
+        }`, formData).then((res) => {
             if (res.status == 201) {
                 toast.success(res.data.msg)
                 setTimeout(() => {
@@ -75,6 +77,14 @@ export default function ProductForm({ category, brands, color }) {
 
     };
 
+     useEffect(() => {
+        const fetchData = async () => {
+          const res = await getProduct(product_id);
+          setProduct(res);
+        };
+        fetchData();
+      }, []);
+
 
 
     return (
@@ -83,7 +93,7 @@ export default function ProductForm({ category, brands, color }) {
             className="w-full mx-auto bg-white/80 backdrop-blur-xl  shadow-2xl rounded-2xl p-10 space-y-8 border border-gray-200">
             {/* Heading */}
             <h2 className="text-3xl font-bold text-gray-800 text-center">
-                🛍️ Create / Edit Product
+                🛍️ Edit Product
             </h2>
 
             {/* Name + Slug */}
@@ -93,6 +103,7 @@ export default function ProductForm({ category, brands, color }) {
                     <input
                         type="text"
                         name="name"
+                        defaultValue={product.name}
                         onChange={createSlug}
                         maxLength={50}
                         ref={nameRfe}
@@ -108,6 +119,7 @@ export default function ProductForm({ category, brands, color }) {
                         ref={slugRfe}
                         readOnly
                         name="slug"
+                        defaultValue={product.slug}
                         maxLength={60}
                         placeholder="iphone-15"
                         required
@@ -116,7 +128,7 @@ export default function ProductForm({ category, brands, color }) {
                 </div>
             </div>
 
-            {/* Short + Long Description */}
+            {/* Short + Long Description  */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="col-span-2">
                     <label className="block text-sm font-medium mb-1">Long Description</label>
@@ -126,6 +138,7 @@ export default function ProductForm({ category, brands, color }) {
                     <label className="block text-sm font-medium mb-1">Short Description</label>
                     <textarea
                         name="shortDescription"
+                        defaultValue={product.shortDescription}
                         maxLength={200}
                         rows="3"
                         placeholder="Quick intro..."
@@ -145,7 +158,7 @@ export default function ProductForm({ category, brands, color }) {
                             ref={originalPriceRfe}
                             onChange={priceCalclute}
                             name="originalPrice"
-                            defaultValue={200}
+                            defaultValue={product.originalPrice}
                             className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
                         />
                     </div>
@@ -156,7 +169,7 @@ export default function ProductForm({ category, brands, color }) {
                             ref={discoutRfe}
                             onChange={priceCalclute}
                             name="discountPercentage"
-                            defaultValue={5}
+                            defaultValue={product.discountPercentage}
                             className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
                         />
                     </div>
@@ -168,6 +181,7 @@ export default function ProductForm({ category, brands, color }) {
                             readOnly
                             name="finalPrice"
                             placeholder="Auto / Manual"
+                            defaultValue={product.finalPrice}
                             className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
                         />
                     </div>

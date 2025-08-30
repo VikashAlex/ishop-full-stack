@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { TbCategory2 } from "react-icons/tb";
 import { Axiosinstance } from "@/app/utils/helper";
 
-export default function ProductsPage() {
+export default function CategoryPage() {
   const [category, setCategory] = useState([]);
   const [flag, setFlag] = useState(false);
   useEffect(() => {
