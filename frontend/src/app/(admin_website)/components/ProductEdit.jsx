@@ -8,9 +8,9 @@ import { toast } from "react-toastify";
 import { useParams, useRouter } from "next/navigation";
 import { getProduct } from "../../../../library/api_calls";
 
-export default function ProductEdit({color,brands,category}) {
-    const {product_id} = useParams()
-    const [product,setProduct]=useState({})
+export default function ProductEdit({ color, brands, category }) {
+    const { product_id } = useParams()
+    const [product, setProduct] = useState({})
     const router = useRouter();
     const [selClr, setSelCrl] = useState([]);
     const [longDesc, setLongDes] = useState('')
@@ -59,31 +59,31 @@ export default function ProductEdit({color,brands,category}) {
 
 
         Axiosinstance.put(`product/edit/${product_id
-        }`, formData).then((res) => {
-            if (res.status == 201) {
-                toast.success(res.data.msg)
-                setTimeout(() => {
-                    router.push('/admin/product');
-                }, 5000);
-            }
-        }).catch((err) => {
-            if (err.response.status == 301) {
-                toast.warning(err.response.data.msg)
-            }
-            else {
-                toast.warning(err.response.data.msg)
-            }
-        });
+            }`, formData).then((res) => {
+                if (res.status == 201) {
+                    toast.success(res.data.msg)
+                    setTimeout(() => {
+                        router.push('/admin/product');
+                    }, 5000);
+                }
+            }).catch((err) => {
+                if (err.response.status == 301) {
+                    toast.warning(err.response.data.msg)
+                }
+                else {
+                    toast.warning(err.response.data.msg)
+                }
+            });
 
     };
 
-     useEffect(() => {
+    useEffect(() => {
         const fetchData = async () => {
-          const res = await getProduct(product_id);
-          setProduct(res);
+            const res = await getProduct(product_id);
+            setProduct(res);
         };
         fetchData();
-      }, []);
+    }, []);
 
 
 
@@ -132,7 +132,7 @@ export default function ProductEdit({color,brands,category}) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="col-span-2">
                     <label className="block text-sm font-medium mb-1">Long Description</label>
-                    <TextEditor value={longDesc} changehandler={(data) => setLongDes(data)} />
+                    <TextEditor value={product.longDescription} changehandler={(data) => setLongDes(data)} />
                 </div>
                 <div className="col-span-1">
                     <label className="block text-sm font-medium mb-1">Short Description</label>

@@ -14,14 +14,15 @@ const productController = {
     let getProduct = null
     try {
       if (id) {
-        getProduct = await productModel.findById(id);
+        getProduct = await productModel.findById(id).populate(["categoryId", "BrandId", "colors"]);
       } else {
-        getProduct = await productModel.find();
+        getProduct = await productModel.find().populate(["categoryId", "BrandId", "colors"])
       }
       if (getProduct) {
         return res.status(201).json({ msg: "Data Get Successfully...", getProduct });
       }
     } catch (error) {
+      console.log(error)
       return res.status(501).json({ msg: "Internal Server Error..", success: false });
     }
   },
@@ -106,19 +107,54 @@ const productController = {
       return res.status(501).json({ msg: "Internal Server Error...", success: false });
     }
   },
-  async editProduct(req,res){
+  async editProduct(req, res) {
     try {
-          const {id} = req.params;
-          const existing = await productModel.findById(id);
-          if (!existing) {
-            return res.status(301).json({msg:"product not found...",success:false});
+      const { id } = req.params;
+      const existing = await productModel.findById(id);
+      if (!existing) {
+        return res.status(301).json({ msg: "product not found...", success: false });
+      }
+      let thumbnail = existing.thumbnail;
+      if (req.files?.thumbnail) {
+        if (existing.thumbnail) {
+          try {
+            fs.unlinkSync(`./public/images/product/${existing.thumbnail}`);
+          } catch (error) {
+            res.status(301).json({ msg: "thumbnail not found...", success: false });
           }
-
-          return res.status(201).json({msg:"Product Update Successfull...😊",success:true});
-          
-        } catch (error) {
-           return res.status(501).json({msg:"Internal Server Error..",success:false});
         }
+        thumbnail = await savefile(req.files.thumbnail);
+      }
+
+      let images = existing.images || [];
+      if (req.files?.images) {
+        if (existing.images && existing.images.length > 0) {
+          existing.images.forEach(img => {
+            try {
+              fs.unlinkSync(`./public/images/product/${img}`)
+            } catch (error) {
+              return res.status(304).json({ msg: "product Images not found...", success: false });
+            }
+          })
+        }
+        images = await Promise.all(
+          (Array.isArray(req.files.images) ? req.files.images : [req.files.images]).map((img) => savefile(img))
+        )
+      }
+      const update = {
+        ...req.body,
+        colors: req.body.colors ? JSON.parse(req.body.colors) : existing.colors,
+        thumbnail,
+        images
+      }
+      await productModel.findByIdAndUpdate(id, {
+        $set: update,
+      })
+      return res.status(201).json({ msg: "Product Update Successfull...😊", success: true });
+
+    } catch (error) {
+      return res.status(501).json({ msg: "Internal Server Error..", success: false });
+    }
   }
 
 }

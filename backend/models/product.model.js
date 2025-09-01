@@ -40,7 +40,7 @@ const productSchema = new mongoose.Schema(
         colors: [
             {
                 type: mongoose.Schema.ObjectId,
-                ref: 'Color'
+                ref: 'color'
             }
         ],
         thumbnail: {

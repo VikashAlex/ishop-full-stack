@@ -1,5 +1,5 @@
 "use client";
-import { Edit, Trash2, Star, ShieldCheck, Truck, Sparkles, Plus,X } from "lucide-react";
+import { Edit, Trash2, Star, ShieldCheck, Truck, Sparkles, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { getProduct } from "../../../../../library/api_calls";
 import { useEffect, useState } from "react";
@@ -190,6 +190,7 @@ export default function ProductPage() {
 
 
 const ViwesCompo = ({ setViweflag, PRODUCT }) => {
+  console.log(PRODUCT)
   return (
     <div className="min-h-screen  bg-gradient-to-b from-white to-slate-50 p-4 md:p-8">
       <div className="flex justify-end px-4 mb-3">
@@ -270,6 +271,27 @@ const ViwesCompo = ({ setViweflag, PRODUCT }) => {
               <span className="px-3 py-1 rounded-full text-xs border flex items-center gap-1"><ShieldCheck className="h-4 w-4" />1 Year Warranty</span>
               <span className="px-3 py-1 rounded-full text-xs border flex items-center gap-1"><Truck className="h-4 w-4" />Fast Delivery</span>
               <span className="px-3 py-1 rounded-full text-xs border flex items-center gap-1"><Sparkles className="h-4 w-4" />Premium Build</span>
+            </div>
+
+            <div className="mb-4">
+              <h3>Colors</h3>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {
+                  PRODUCT.colors?.map((clr, index) => {
+                    return <div
+                      style={{backgroundColor:clr.hexacode}}
+                      className="shadow-2xl px-3 py-1 border border-slate-100 rounded-2xl text-white" key={index + 1}>{clr.name}</div>
+                  })
+                }
+              </div>
+            </div>
+            <div className="mb-4">
+              <h3>Category</h3>
+              <div className="mt-2 border-slate-100 bg-amber-500 font-bold rounded-2xl text-black shadow-2xl px-3 py-1">{PRODUCT.categoryId.name}</div>
+            </div>
+            <div className="mb-4">
+              <h3>Brand</h3>
+              <div className="mt-2 border-slate-100  bg-amber-500 font-bold rounded-2xl text-black shadow-2xl px-3 py-1">{PRODUCT.BrandId.name}</div>
             </div>
           </div>
           {/* Details Tabs (simplified) */}
