@@ -5,6 +5,7 @@ const categoryRoutes = require('./routes/category.route');
 const colorRoutes = require('./routes/color.route');
 const brandRoutes = require('./routes/brand.route');
 const productRoutes = require('./routes/product.route');
+const adminRoutes = require('./routes/admin.routes');
 const server = express();
 mongoose.set('strictQuery', true); 
 require('dotenv').config();
@@ -16,6 +17,7 @@ server.use('/category',categoryRoutes)
 server.use('/color',colorRoutes)
 server.use('/brands',brandRoutes)
 server.use('/product',productRoutes)
+server.use('/admin',adminRoutes)
 
 server.use(express.static('./public'));
 
