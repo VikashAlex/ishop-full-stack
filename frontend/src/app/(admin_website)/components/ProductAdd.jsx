@@ -1,5 +1,5 @@
 'use client'
-import { Axiosinstance, helper } from "@/app/utils/helper";
+import { Axiosinstance, getCokies, helper } from "@/app/utils/helper";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import Select from 'react-select'
@@ -36,6 +36,7 @@ export default function ProductForm({ category, brands, color }) {
     }
     const formHandler = (e) => {
         e.preventDefault();
+        const token = getCokies('admin_token')
         const formData = new FormData();
         formData.append("name", nameRfe.current.value);
         formData.append("slug", slugRfe.current.value);
@@ -57,7 +58,11 @@ export default function ProductForm({ category, brands, color }) {
         }
 
 
-        Axiosinstance.post("product/create", formData).then((res) => {
+        Axiosinstance.post("product/create", formData , {
+            headers:{
+                Authorization:token
+            }
+        }).then((res) => {
             if (res.status == 201) {
                 toast.success(res.data.msg)
                 setTimeout(() => {

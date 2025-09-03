@@ -1,6 +1,33 @@
-import React from "react";
+'use client'
+
+import { toast } from "react-toastify";
+import { Axiosinstance } from "../utils/helper";
+import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
+  const router = useRouter()
+  const loginHandler = (e) => {
+    e.preventDefault();
+    const data = {
+      email: e.target.email.value,
+      password: e.target.password.value
+    }
+
+    Axiosinstance.post('/admin/login', data, { withCredentials: true }).then((res) => {
+      toast.success(res.data.msg)
+      if (res.status == 201) {
+        setTimeout(() => {
+          router.push('/admin')
+        }, 5000);
+      }
+
+    }).catch((error) => {
+      console.log(error)
+      toast.warning(error.response.data.msg)
+    })
+  }
+
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-100 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950 flex items-center justify-center p-4">
       {/* Background decoration */}
@@ -81,7 +108,7 @@ export default function AdminLoginPage() {
               </button>
             </div>
 
-            <form action="#" method="post" className="space-y-6" noValidate>
+            <form method="post" className="space-y-6" onSubmit={loginHandler}>
               <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-200">
                   Email
@@ -91,6 +118,7 @@ export default function AdminLoginPage() {
                     id="email"
                     name="email"
                     type="email"
+                    required
                     placeholder="admin@company.com"
                     autoComplete="username"
                     className="peer w-full rounded-2xl border border-slate-300/80 dark:border-white/10 bg-white/70 dark:bg-white/5 px-4 py-3 pr-10 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition"
@@ -110,6 +138,7 @@ export default function AdminLoginPage() {
                 <div className="relative">
                   <input
                     id="password"
+                    required
                     name="password"
                     type="password"
                     placeholder="••••••••"

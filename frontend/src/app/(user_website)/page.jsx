@@ -4,6 +4,7 @@ import FretureBrand from './components/homepage/FretureBrand'
 import DealsSec from './components/homepage/DealsSec'
 import TopSelling from './components/homepage/TopSelling'
 import BestSelling from './components/homepage/BestSelling'
+import InfoSection from './components/homepage/InfoSection'
 
 function page() {
   return (
@@ -13,6 +14,7 @@ function page() {
     <DealsSec/>
     <TopSelling/>
     <BestSelling/>
+    <InfoSection/>
     </>
   )
 }

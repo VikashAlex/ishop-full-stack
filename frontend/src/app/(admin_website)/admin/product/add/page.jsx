@@ -8,7 +8,7 @@ async function page() {
     const brands = await getBrands();
     const color = await getColors();
     return (
-        <div className='p-5 w-full '>
+        <div className='p-5 w-full'>
             <ProductAdd category={category} brands={brands} color={color} />
         </div>
     )

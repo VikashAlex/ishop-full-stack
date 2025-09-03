@@ -1,6 +1,7 @@
 "use client";
 import { Edit, Trash2, RefreshCcw, Plus } from "lucide-react";
 import Link from "next/link";
+import Swal from "sweetalert2";
 import { getCategory } from "../../../../../library/api_calls";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -20,17 +21,36 @@ export default function CategoryPage() {
   }, [flag]);
 
   const deleteCategory = (id) => {
-    Axiosinstance
-      .delete(`category/delete/${id}`)
-      .then((res) => {
-        if (res.status == 201) {
-          toast.success(res.data.msg);
-          setFlag(!flag);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success"
+        });
+        Axiosinstance
+          .delete(`category/delete/${id}`)
+          .then((res) => {
+            if (res.status == 201) {
+              toast.success(res.data.msg);
+              setFlag(!flag);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+
+      }
+    });
   };
 
   const updateCategory = (id) => {
@@ -135,15 +155,14 @@ export default function CategoryPage() {
                   <td className="px-6 py-4">
                     <img
                       className="w-[30px]"
-                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL}images/categoryImg/${category.image}`} alt={category.image} />
+                      src={`${process.env.NEXT_PUBLIC_API_BASE_URL}images/categoryImg/${category.image}`} alt={category.image} />
                   </td>
                   <td className="px-6 py-4">{category.name}</td>
                   <td className="px-6 py-4">{category.slug}</td>
                   <td className="px-6 py-4">
                     <p
-                      className={`text-white rounded-lg text-center ${
-                        category.status ? "bg-green-500" : "bg-red-500"
-                      }`}
+                      className={`text-white rounded-lg text-center ${category.status ? "bg-green-500" : "bg-red-500"
+                        }`}
                     >
                       {category.status ? "Active" : "Inactive"}
                     </p>
@@ -156,13 +175,13 @@ export default function CategoryPage() {
                     >
                       <Trash2 className="w-4 h-4" /> Delete
                     </button>
-                    <button onClick={()=>updateCategory(category._id)} className="flex items-center gap-1 px-3 py-1.5 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition text-xs">
+                    <button onClick={() => updateCategory(category._id)} className="flex items-center gap-1 px-3 py-1.5 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition text-xs">
                       <RefreshCcw className="w-4 h-4" /> Update
                     </button>
                     <Link href={`/admin/category/edit/${category._id}`}>
-                    <button className="flex items-center gap-1 px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition text-xs">
-                      <Edit className="w-4 h-4" /> Edit
-                    </button>
+                      <button className="flex items-center gap-1 px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition text-xs">
+                        <Edit className="w-4 h-4" /> Edit
+                      </button>
                     </Link>
                   </td>
                 </tr>

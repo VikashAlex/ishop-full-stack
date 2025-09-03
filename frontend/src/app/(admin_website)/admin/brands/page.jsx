@@ -1,12 +1,13 @@
 "use client";
 import { Edit, Trash2, RefreshCcw, Plus } from "lucide-react";
 import Link from "next/link";
-import { getBrands} from "../../../../../library/api_calls";
+import { getBrands } from "../../../../../library/api_calls";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { TbCategory2 } from "react-icons/tb";
 import { Axiosinstance } from "@/app/utils/helper";
+import Swal from "sweetalert2";
 
 export default function BrandsPage() {
   const [brands, setBrands] = useState([]);
@@ -20,17 +21,34 @@ export default function BrandsPage() {
   }, [flag]);
 
   const deleteBrands = (id) => {
-    Axiosinstance
-      .delete(`brands/delete/${id}`)
-      .then((res) => {
-        if (res.status == 201) {
-          toast.success(res.data.msg);
-          setFlag(!flag);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success"
+        });
+        Axiosinstance
+          .delete(`brands/delete/${id}`)
+          .then((res) => {
+            if (res.status == 201) {
+              toast.success(res.data.msg);
+              setFlag(!flag);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    });
   };
 
   const updateBrands = (id) => {
@@ -135,15 +153,14 @@ export default function BrandsPage() {
                   <td className="px-6 py-4">
                     <img
                       className="w-[30px]"
-                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL}images/brands/${brands.logo}`} alt={brands.logo} />
+                      src={`${process.env.NEXT_PUBLIC_API_BASE_URL}images/brands/${brands.logo}`} alt={brands.logo} />
                   </td>
                   <td className="px-6 py-4">{brands.name}</td>
                   <td className="px-6 py-4">{brands.slug}</td>
                   <td className="px-6 py-4">
                     <p
-                      className={`text-white rounded-lg text-center ${
-                        brands.status ? "bg-green-500" : "bg-red-500"
-                      }`}
+                      className={`text-white rounded-lg text-center ${brands.status ? "bg-green-500" : "bg-red-500"
+                        }`}
                     >
                       {brands.status ? "Active" : "Inactive"}
                     </p>
@@ -156,13 +173,13 @@ export default function BrandsPage() {
                     >
                       <Trash2 className="w-4 h-4" /> Delete
                     </button>
-                    <button onClick={()=>updateBrands(brands._id)} className="flex cursor-pointer items-center gap-1 px-3 py-1.5 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition text-xs">
+                    <button onClick={() => updateBrands(brands._id)} className="flex cursor-pointer items-center gap-1 px-3 py-1.5 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition text-xs">
                       <RefreshCcw className="w-4 h-4" /> Update
                     </button>
                     <Link href={`/admin/brands/edit/${brands._id}`}>
-                    <button className="flex items-center gap-1 px-3 cursor-pointer py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition text-xs">
-                      <Edit className="w-4 h-4" /> Edit
-                    </button>
+                      <button className="flex items-center gap-1 px-3 cursor-pointer py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition text-xs">
+                        <Edit className="w-4 h-4" /> Edit
+                      </button>
                     </Link>
                   </td>
                 </tr>

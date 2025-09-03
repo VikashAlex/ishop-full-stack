@@ -8,6 +8,7 @@ import { TbCategory2 } from "react-icons/tb";
 import { Axiosinstance } from "@/app/utils/helper";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductBtn from "../../components/ProductBtn";
+import Swal from "sweetalert2";
 
 export default function ProductPage() {
   const [product, setProduct] = useState([]);
@@ -23,17 +24,34 @@ export default function ProductPage() {
   }, [flag]);
 
   const deleteProduct = (id) => {
-    Axiosinstance
-      .delete(`product/delete/${id}`)
-      .then((res) => {
-        if (res.status == 201) {
-          toast.success(res.data.msg);
-          setFlag(!flag);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success"
+        });
+        Axiosinstance
+          .delete(`product/delete/${id}`)
+          .then((res) => {
+            if (res.status == 201) {
+              toast.success(res.data.msg);
+              setFlag(!flag);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    });
   };
 
 
@@ -279,7 +297,7 @@ const ViwesCompo = ({ setViweflag, PRODUCT }) => {
                 {
                   PRODUCT.colors?.map((clr, index) => {
                     return <div
-                      style={{backgroundColor:clr.hexacode}}
+                      style={{ backgroundColor: clr.hexacode }}
                       className="shadow-2xl px-3 py-1 border border-slate-100 rounded-2xl text-white" key={index + 1}>{clr.name}</div>
                   })
                 }

@@ -8,11 +8,12 @@ import { toast } from "react-toastify";
 import { getColors } from "../../../../../library/api_calls";
 import { Axiosinstance } from "@/app/utils/helper";
 import EditCompo from "../../components/EditCompo";
+import Swal from "sweetalert2";
 
 export default function ProductsPage() {
   const [Colors, setColors] = useState([]);
   const [editflag, setEditflag] = useState(false)
-  const [id ,setID]=useState(null)
+  const [id, setID] = useState(null)
   const [flag, setFlag] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
@@ -36,18 +37,35 @@ export default function ProductsPage() {
     }
   }
   const deleteColors = async (id) => {
-    const res = await Axiosinstance.delete(`color/delete/${id}`);
-    if (res.status == 201) {
-      toast.success(res.data.msg)
-      setFlag(!flag)
-    } else if (res.status == 301) {
-      toast.info(res.data.msg)
-    } else {
-      toast.info(res.data.msg)
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success"
+        });
+        const res = await Axiosinstance.delete(`color/delete/${id}`);
+        if (res.status == 201) {
+          toast.success(res.data.msg)
+          setFlag(!flag)
+        } else if (res.status == 301) {
+          toast.info(res.data.msg)
+        } else {
+          toast.info(res.data.msg)
+        }
+      }
+    });
   }
 
-  const handel = (id)=>{
+  const handel = (id) => {
     setEditflag(true)
     setID(id)
   }

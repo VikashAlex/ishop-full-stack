@@ -5,14 +5,19 @@ const adminController = {
         const { email, password } = req.body;
         try {
             const admin = await adminModel.findOne({ email });
-            if (!admin) return res.status(301).json({ msg: "Admin Not found..", success: false });
+            if (!admin) return res.status(301).json({ msg: "Admin Not Exsit..", success: false });
             if (password !== admin.password) return res.status(301).json({ msg: "password not match..", success: false });
-
-            const admin_token = jwt.sign({
+            const token = jwt.sign({
                 id: admin._id,
                 email: admin.email
             }, process.env.SECRET_KEY_JWT, { expiresIn: '2d' });
-            return res.status(201).json({ msg: "Admin  Found...", success: true,admin_token })
+            res.cookie("admin_token",token , {
+                httpOnly: false,
+                secure: false,   
+                maxAge: 1000 * 60 * 60 * 24, 
+                sameSite: "lax" 
+            });
+            return res.status(201).json({ msg: "Admin  Login...", success: true, token })
         } catch (error) {
             return res.status(501).json({ msg: "Internal Server Error...", success: false })
         }

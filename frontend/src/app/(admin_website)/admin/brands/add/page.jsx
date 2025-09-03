@@ -1,14 +1,15 @@
 "use client";
-import { Axiosinstance, helper } from "@/app/utils/helper";
+import { Axiosinstance, getCokies, helper } from "@/app/utils/helper";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
-import {  toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 
 function page() {
   const router = useRouter();
+  const token = getCokies('admin_token')
   const nameRfe = useRef(null);
   const slugRfe = useRef(null);
   const statusRfe = useRef(null);
@@ -24,7 +25,11 @@ function page() {
     formData.append("slug", slug);
     formData.append("status", status);
     formData.append("logo", logo);
-    Axiosinstance.post("brands/create", formData).then((res) => {
+    Axiosinstance.post("brands/create", formData, {
+      headers: {
+        Authorization: token
+      }
+    }).then((res) => {
       if (res.status == 201) {
         toast.success(res.data.msg)
         setTimeout(() => {
